@@ -4,10 +4,16 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "enemy.h"
+
 const float FPS = 60;
 
+inline int misc_rand()
+{ return (1 + (rand() % 10));
+}
+
 int main(int argc, char *argv[])
-{	
+{
 	srand(time(NULL));
 	ALLEGRO_DISPLAY* display = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
@@ -71,8 +77,8 @@ int main(int argc, char *argv[])
 	float x=0,y=0; // Player position
 	bool running    = true;
 	bool redraw     = true;
-	bool draw_enemy = true; // TODO: Handle when to turn it false
-	
+	struct Enemy enemy;
+
 	// Game loop
 	while (running)
 	{
@@ -88,39 +94,43 @@ int main(int argc, char *argv[])
 		al_flip_display();
 
 		// Draw enemy primitives
-		if (draw_enemy)
+		if (enemy.draw)
 		{
-			int x_rand = 1 + (rand() % al_get_display_width (display));
-			int y_rand = 1 + (rand() % al_get_display_height(display));
-			switch (1 + (rand() % 5))
+			enemy.y    = 1 + (rand() % al_get_display_width (display));
+			enemy.x    = 1 + (rand() % al_get_display_height(display));
+			enemy.type = 1 + (rand() % 5);
+			switch (enemy.type)
 			{
 				case 1: // line
-					al_draw_line(x_rand, y_rand,
+					al_draw_line(enemy.x,enemy.y,
 						al_get_display_width(display),
 						al_get_display_height(display),
-						al_map_rgb(255,0,0),1 + 
-						(rand() % 10)); break;
+						al_map_rgb(255,0,0),
+						misc_rand()); break;
 				case 2: // triangle
-					al_draw_filled_triangle(x_rand,
-						y_rand,x_rand,y_rand,
+					al_draw_filled_triangle(enemy.x,
+						enemy.y,enemy.x,enemy.y,
 						al_get_display_width(display),
 						al_get_display_height(display),
 						al_map_rgb(255,0,0)); break;
 				case 3: // rectangle
-					al_draw_filled_rectangle(x_rand,y_rand,
+					al_draw_filled_rectangle(enemy.x,enemy.y,
 						al_get_display_width(display),
 						al_get_display_height(display),
 						al_map_rgb(255,0,0)); break;
 				case 4: // circle
-					al_draw_filled_circle(x_rand,y_rand,
-						x_rand,al_map_rgb(225,0,0)); break;
+					al_draw_filled_circle(enemy.x,enemy.y,
+						misc_rand(),al_map_rgb(225,0,0)); 
+						break;
 				case 5: // arc
-					al_draw_arc(x_rand,y_rand,y_rand,
-						x_rand,y_rand,al_map_rgb(225,0,0),
-						x_rand); break;
+					al_draw_arc(enemy.x,enemy.y,
+						misc_rand(),misc_rand(),
+						enemy.y,al_map_rgb(225,0,0),
+						misc_rand()); break;
 			}
 			al_flip_display();
 		}
+		enemy.draw = false;
 
 		// Fetch the event (if one exists)
 		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);
@@ -157,11 +167,11 @@ int main(int argc, char *argv[])
 		if (redraw && al_is_event_queue_empty(event_queue))
 		{
 			// Redraw
-			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_clear_to_color(al_map_rgb(0,0,0));
 			al_flip_display();
 			redraw = false;
 		}
-	} 
+	}
 
 	// Clean up
 	al_destroy_display(display);
