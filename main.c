@@ -7,14 +7,12 @@
 const float FPS = 60;
 
 int main(int argc, char *argv[])
-{
+{	
+	srand(time(NULL));
 	ALLEGRO_DISPLAY* display = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
 	ALLEGRO_TIMER* timer = NULL;
 	ALLEGRO_BITMAP* bitmap = NULL;
-
-	bool running = true;
-	bool redraw = true;
 
 	// Initialize allegro
 	if (!al_init())
@@ -71,7 +69,10 @@ int main(int argc, char *argv[])
 	al_start_timer(timer);
 
 	float x=0,y=0; // Player position
-
+	bool running    = true;
+	bool redraw     = true;
+	bool draw_enemy = true; // TODO: Handle when to turn it false
+	
 	// Game loop
 	while (running)
 	{
@@ -89,7 +90,26 @@ int main(int argc, char *argv[])
 		// Draw enemy primitives
 		if (draw_enemy)
 		{
-			// TODO
+			switch (1 + (rand() % 5))
+			{
+				case 1: // line
+					al_draw_line(1 + (rand() 
+						% al_get_display_width(display)),
+						1 + (rand() 
+						% al_get_display_height(display)),
+						al_get_display_width(display),
+						al_get_display_height(display),
+						al_map_rgb(255,0,0),1 + 
+						(rand() % 10)); break;
+				case 2: // TODO: triangle
+					al_draw_filled_triangle(/*...*/); break;
+				case 3: // TODO: rectangle
+					al_draw_filled_rectangle(/*...*/); break;
+				case 4: // TODO: circle
+					al_draw_filled_circle(/**/); break;
+				case 5: // TODO: arc
+					al_draw_arc(/*TODO*/); break;
+			}
 		}
 
 		// Fetch the event (if one exists)
