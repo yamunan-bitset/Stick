@@ -90,26 +90,36 @@ int main(int argc, char *argv[])
 		// Draw enemy primitives
 		if (draw_enemy)
 		{
+			int x_rand = 1 + (rand() % al_get_display_width (display));
+			int y_rand = 1 + (rand() % al_get_display_height(display));
 			switch (1 + (rand() % 5))
 			{
 				case 1: // line
-					al_draw_line(1 + (rand() 
-						% al_get_display_width(display)),
-						1 + (rand() 
-						% al_get_display_height(display)),
+					al_draw_line(x_rand, y_rand,
 						al_get_display_width(display),
 						al_get_display_height(display),
 						al_map_rgb(255,0,0),1 + 
 						(rand() % 10)); break;
-				case 2: // TODO: triangle
-					al_draw_filled_triangle(/*...*/); break;
-				case 3: // TODO: rectangle
-					al_draw_filled_rectangle(/*...*/); break;
-				case 4: // TODO: circle
-					al_draw_filled_circle(/**/); break;
-				case 5: // TODO: arc
-					al_draw_arc(/*TODO*/); break;
+				case 2: // triangle
+					al_draw_filled_triangle(x_rand,
+						y_rand,x_rand,y_rand,
+						al_get_display_width(display),
+						al_get_display_height(display),
+						al_map_rgb(255,0,0)); break;
+				case 3: // rectangle
+					al_draw_filled_rectangle(x_rand,y_rand,
+						al_get_display_width(display),
+						al_get_display_height(display),
+						al_map_rgb(255,0,0)); break;
+				case 4: // circle
+					al_draw_filled_circle(x_rand,y_rand,
+						x_rand,al_map_rgb(225,0,0)); break;
+				case 5: // arc
+					al_draw_arc(x_rand,y_rand,y_rand,
+						x_rand,y_rand,al_map_rgb(225,0,0),
+						x_rand); break;
 			}
+			al_flip_display();
 		}
 
 		// Fetch the event (if one exists)
