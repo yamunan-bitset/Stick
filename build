@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gcc main.c -lallegro -lallegro_primitives -g -o stick
+gcc main.c -lallegro -lallegro_primitives -lallegro_audio -lallegro_acodec -g -o stick

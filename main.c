@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <time.h>
 #include <stdlib.h>
 
@@ -15,10 +17,13 @@ int misc_rand()
 int main(int argc, char *argv[])
 {
 	srand(time(NULL));
-	ALLEGRO_DISPLAY* display = NULL;
+	ALLEGRO_DISPLAY* display         = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
-	ALLEGRO_TIMER* timer = NULL;
-	ALLEGRO_BITMAP* bitmap = NULL;
+	ALLEGRO_TIMER* timer             = NULL;
+	ALLEGRO_BITMAP* bitmap           = NULL;
+	ALLEGRO_SAMPLE* sfx              = NULL;
+	ALLEGRO_SAMPLE* bgm              = NULL;
+	ALLEGRO_SAMPLE* gg               = NULL; 
 
 	// Initialize allegro
 	if (!al_init())
@@ -29,7 +34,13 @@ int main(int argc, char *argv[])
 
 	if (!al_install_keyboard())
 	{
-		fprintf(stderr, "Failed to install keyboard\n");
+		fprintf(stderr, "Failed to install keyboard.\n");
+		return 1;
+	}
+	
+	if (!al_install_audio())
+	{
+		fprintf(stderr, "Failed to install audio.\n");
 		return 1;
 	}
 
@@ -63,16 +74,27 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	if (!al_init_acodec_addon())
+	{
+		fprintf(stderr, "Failed to load acodec addon.\n");
+		return 1; 
+	}
+
 	// Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
 	// Display a black screen
-	al_clear_to_color(al_map_rgb(0, 0, 0));
+	al_clear_to_color(al_map_rgb(0,0,0));
 	al_flip_display();
 
 	// Start the timer
 	al_start_timer(timer);
+
+	sfx = al_load_sample("sfx.wav");
+	bgm = al_load_sample("bgm.wav");
+	gg  = al_load_sample("gg.wav");
+	al_reserve_samples(1);
 
 	float x=0,y=0; // Player position
 	bool running    = true;
@@ -86,7 +108,8 @@ int main(int argc, char *argv[])
 		ALLEGRO_TIMEOUT timeout;
 		ALLEGRO_KEYBOARD_STATE key_state;
 		al_get_keyboard_state(&key_state);
-	
+		al_play_sample(bgm,1.0f,0.0f,1.0f,ALLEGRO_PLAYMODE_LOOP,0);
+
 		// Draw figure
 		al_clear_to_color(al_map_rgba_f(0, 0, 0, 1));
 		al_draw_line(x,y,al_get_display_width(display),
@@ -134,7 +157,6 @@ int main(int argc, char *argv[])
 						al_flip_display(); break;
 			}
 		}
-		//enemy.draw = false;
 
 		// Fetch the event (if one exists)
 		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);
@@ -151,6 +173,8 @@ int main(int argc, char *argv[])
 					redraw = true;
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
+					al_play_sample(gg,1.0f,0.0f,1.0f,
+							ALLEGRO_PLAYMODE_ONCE,0);
 					running = false;
 					break;
 				default:
@@ -165,6 +189,8 @@ int main(int argc, char *argv[])
 				y+=10;
 			if (al_key_down(&key_state,ALLEGRO_KEY_UP   ))
 				y-=10;
+			
+			al_play_sample(sfx,1.0f,0.0f,1.0f,ALLEGRO_PLAYMODE_ONCE,0);
 		}
 
 		// Check if we need to redraw
@@ -181,6 +207,8 @@ int main(int argc, char *argv[])
 	al_destroy_display(display);
 	al_uninstall_keyboard();
 	al_destroy_event_queue(event_queue);
+	al_destroy_sample(sfx);
+	al_destroy_sample(bgm);
 		
 	return 0;
 }
