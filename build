@@ -1,1 +1,3 @@
-gcc main.c -lallegro -lallegro_primitives -g
+#!/bin/bash
+
+gcc main.c -lallegro -lallegro_primitives -g -o stick
