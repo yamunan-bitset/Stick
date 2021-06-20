@@ -6,7 +6,7 @@
 struct Enemy
 {
 	int x,y,type;
-	bool draw,redraw;
+	bool redraw;
 };
 
 #endif
