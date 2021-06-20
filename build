@@ -1,3 +1,7 @@
 #!/bin/bash
 
-gcc main.c -lallegro -lallegro_primitives -lallegro_audio -lallegro_acodec -g -o stick
+kernel=$(uname)
+case $kernel in
+	(Linux)	gcc main.c -lallegro -lallegro_primitives -lallegro_audio -lallegro_acodec -g -o stick ;;
+	(Darwin) gcc main.c -lallegro -lallegro_primitives -lallegro_audio -lallegro_acodec -lallegro_main -g -o stick ;;
+esac
