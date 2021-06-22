@@ -14,7 +14,7 @@ int misc_rand()
 { srand(time(NULL)); return (1 + (rand() % 10));
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char** argv)
 {	srand(time(NULL));
 	ALLEGRO_DISPLAY* display         = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
 	bool running = true, redraw = true;
 	struct Enemy enemy;
 	
-	enemy.type = 1 + (rand() % 5);
 	enemy.redraw = true;
 
 	// Game loop
@@ -117,6 +116,8 @@ int main(int argc, char *argv[])
 		// Draw enemy primitives
 		enemy.y = 1 + (rand() % al_get_display_width (display));
 		enemy.x = 1 + (rand() % al_get_display_height(display));
+		enemy.type = 1 + (rand() % 5);
+
 		if (enemy.redraw)
 		{			
 			switch (enemy.type)
